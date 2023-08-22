@@ -10,15 +10,14 @@ $files = glob("$playlist/XC*");
 $fIndexed = [];
 foreach ($files as $file) {
     $name = explode(' - ', $file)[1];
+    $lastWord = explode(' ', $name);
+    $lastWord = array_pop($lastWord);
     // sort by last word (i.e. put babblers together), then the rest of the name...
-    $name = strtoupper(strrev($name));
-    $fIndexed[$name][] = $file;
+    $fIndexed[md5($lastWord)][] = $file;
 }
 
-$seed = [];
-for ($l = 'A', $i = 0; $i < 26; $l++, $i++) $seed[$l] = random_int(1, 1000);
-
-uksort($fIndexed, fn($a, $b) => $seed[$a[0]] <=> $seed[$b[0]] ?: $a <=> $b);
+ksort($fIndexed);
+#uksort($fIndexed, fn($a, $b) => $seed[$a[0]] <=> $seed[$b[0]] ?: $a <=> $b);
 
 echo "Your playlist is:\n\n";
 foreach ($fIndexed as $files) foreach ($files as $f) echo " * $f\n";
