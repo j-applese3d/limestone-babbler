@@ -50,6 +50,24 @@ function lastWord($name) {
     return $lastWord;
 }
 
+function sayName($name) {
+    $filename = './.cache/' . $name . '.wav';
+    $cleanFilename = escapeshellarg($filename);
+    $playCmd = "cvlc --global-key-stop 'Ctrl+M' --play-and-exit $cleanFilename";
+    if (file_exists($filename)) {
+        shell_exec($playCmd);
+        return;
+    }
+    $nameClean = escapeshellarg($name);
+    if (!file_exists('./.cache'))
+        mkdir('./.cache');
+
+    shell_exec("echo $nameClean | ./piper/piper --model ./piper/en_US-amy-medium.onnx --output_file $cleanFilename");
+    
+    shell_exec($playCmd);
+}
+
+
 function playCall($file, $quizMode) {
     sleep(2);
     
@@ -66,7 +84,8 @@ function playCall($file, $quizMode) {
     echo "\n\n$audioDescPretty\n\n";
     shell_exec("notify-send " . escapeshellarg($audioDescPretty));
     if (!$quizMode) {
-        shell_exec("say $nameClean");
+        sayName($name);
+        #shell_exec("say $nameClean");
         sleep(1);
     }
     
